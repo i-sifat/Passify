@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../auth/login_screen.dart';
 import '../auth/register_screen.dart';
 import 'onboarding_page.dart';
@@ -19,7 +18,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingPageData(
       title: 'GENERATE\nSECURE\nPASSWORDS.',
       subtitle:
-          'Stop using unsecure passwords for your online accounts, level up with OnePass. Get the most secure and difficult-to-crack passwords.',
+          'Stop using unsecure passwords for your online accounts, level up with Passify. Get the most secure and difficult-to-crack passwords.',
     ),
     OnboardingPageData(
       title: 'ALL YOUR\nPASSWORDS ARE\nHERE.',
@@ -29,7 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingPageData(
       title: 'DON\'T TYPE,\nAUTOFILL YOUR\nCREDENTIALS.',
       subtitle:
-          'Don\'t compromise your passwords by typing them in public, let OnePass autofill those and keep your credentials secure.',
+          'Don\'t compromise your passwords by typing them in public, let Passify autofill those and keep your credentials secure.',
     ),
   ];
 
@@ -48,7 +47,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     '***',
@@ -62,63 +60,87 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _pages.length,
-                onPageChanged: (index) {
-                  setState(() => _currentPage = index);
-                },
-                itemBuilder: (context, index) {
-                  return OnboardingPage(data: _pages[index]);
-                },
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: _pages.length,
+                    onPageChanged: (index) {
+                      setState(() => _currentPage = index);
+                    },
+                    itemBuilder: (context, index) {
+                      return OnboardingPage(data: _pages[index]);
+                    },
+                  ),
+                  Positioned(
+                    left: 24,
+                    top: 24,
+                    child: Column(
+                      children: List.generate(
+                        _pages.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentPage == index
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  color: _currentPage == index
+                                      ? Colors.white
+                                      : Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
+              child: Row(
                 children: [
-                  SmoothPageIndicator(
-                    controller: _pageController,
-                    count: _pages.length,
-                    effect: WormEffect(
-                      dotHeight: 8,
-                      dotWidth: 8,
-                      spacing: 8,
-                      activeDotColor: Theme.of(context).primaryColor,
-                      dotColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text('REGISTER'),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text('REGISTER'),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text('LOGIN'),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text('LOGIN'),
+                    ),
                   ),
                 ],
               ),
