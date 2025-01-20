@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../auth/login_screen.dart';
+import '../auth/register_screen.dart';
 import 'onboarding_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -16,15 +18,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingPageData> _pages = [
     OnboardingPageData(
       title: 'GENERATE\nSECURE\nPASSWORDS.',
-      subtitle: 'Stop using unsecure passwords for your online accounts, level up with OnePass. Get the most secure and difficult-to-crack passwords.',
+      subtitle:
+          'Stop using unsecure passwords for your online accounts, level up with OnePass. Get the most secure and difficult-to-crack passwords.',
     ),
     OnboardingPageData(
       title: 'ALL YOUR\nPASSWORDS ARE\nHERE.',
-      subtitle: 'Store and manage all of your passwords from one place. Don\'t remember hundreds of passwords, just remember one.',
+      subtitle:
+          'Store and manage all of your passwords from one place. Don\'t remember hundreds of passwords, just remember one.',
     ),
     OnboardingPageData(
       title: 'DON\'T TYPE,\nAUTOFILL YOUR\nCREDENTIALS.',
-      subtitle: 'Don\'t compromise your passwords by typing them in public, let OnePass autofill those and keep your credentials secure.',
+      subtitle:
+          'Don\'t compromise your passwords by typing them in public, let OnePass autofill those and keep your credentials secure.',
     ),
   ];
 
@@ -89,7 +94,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () {
-                            // TODO: Navigate to register screen
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterScreen(),
+                              ),
+                            );
                           },
                           child: const Text('REGISTER'),
                         ),
@@ -98,7 +108,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Navigate to login screen
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
                           },
                           child: const Text('LOGIN'),
                         ),
