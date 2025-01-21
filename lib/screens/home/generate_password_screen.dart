@@ -11,9 +11,13 @@ class GeneratePasswordScreen extends ConsumerStatefulWidget {
       _GeneratePasswordScreenState();
 }
 
-class _GeneratePasswordScreenState extends ConsumerState<GeneratePasswordScreen> {
+class _GeneratePasswordScreenState
+    extends ConsumerState<GeneratePasswordScreen> {
   String _generatedPassword = '';
-  int _passwordLength = 10;
+  int _passwordLength = 12;
+  bool _includeUppercase = true;
+  bool _includeLowercase = true;
+  bool _includeNumbers = true;
   bool _includeSymbols = true;
 
   @override
@@ -23,18 +27,24 @@ class _GeneratePasswordScreenState extends ConsumerState<GeneratePasswordScreen>
   }
 
   void _generatePassword() {
-    const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
     const symbols = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
 
-    String chars = letters + numbers;
-    if (_includeSymbols) {
-      chars += symbols;
+    String chars = '';
+    if (_includeLowercase) chars += lowercase;
+    if (_includeUppercase) chars += uppercase;
+    if (_includeNumbers) chars += numbers;
+    if (_includeSymbols) chars += symbols;
+
+    if (chars.isEmpty) {
+      chars = lowercase; // Default to lowercase if nothing is selected
     }
 
     final random = Random.secure();
-    _generatedPassword = List.generate(_passwordLength,
-            (index) => chars[random.nextInt(chars.length)]).join();
+    _generatedPassword = List.generate(
+        _passwordLength, (index) => chars[random.nextInt(chars.length)]).join();
     setState(() {});
   }
 
@@ -79,90 +89,45 @@ class _GeneratePasswordScreenState extends ConsumerState<GeneratePasswordScreen>
                 ),
               ),
               const SizedBox(height: 32),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'PASSWORD LENGTH',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<int>(
-                    value: _passwordLength,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Theme.of(context).brightness == Brightness.light
-                          ? Colors.grey[100]
-                          : Colors.grey[800],
-                    ),
-                    items: [8, 10, 12, 14, 16, 18, 20]
-                        .map((length) => DropdownMenuItem(
-                              value: length,
-                              child: Text(length.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _passwordLength = value;
-                          _generatePassword();
-                        });
-                      }
-                    },
-                  ),
-                ],
+              _buildLengthSelector(context),
+              const SizedBox(height: 24),
+              _buildOptionSwitch(
+                context,
+                'Include Uppercase Letters',
+                _includeUppercase,
+                (value) => setState(() {
+                  _includeUppercase = value;
+                  _generatePassword();
+                }),
               ),
-              const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'INCLUDE SYMBOLS',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<bool>(
-                    value: _includeSymbols,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Theme.of(context).brightness == Brightness.light
-                          ? Colors.grey[100]
-                          : Colors.grey[800],
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: true,
-                        child: Text('Yes'),
-                      ),
-                      DropdownMenuItem(
-                        value: false,
-                        child: Text('No'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _includeSymbols = value;
-                          _generatePassword();
-                        });
-                      }
-                    },
-                  ),
-                ],
+              _buildOptionSwitch(
+                context,
+                'Include Lowercase Letters',
+                _includeLowercase,
+                (value) => setState(() {
+                  _includeLowercase = value;
+                  _generatePassword();
+                }),
               ),
-              const SizedBox(height: 32),
+              _buildOptionSwitch(
+                context,
+                'Include Numbers',
+                _includeNumbers,
+                (value) => setState(() {
+                  _includeNumbers = value;
+                  _generatePassword();
+                }),
+              ),
+              _buildOptionSwitch(
+                context,
+                'Include Symbols',
+                _includeSymbols,
+                (value) => setState(() {
+                  _includeSymbols = value;
+                  _generatePassword();
+                }),
+              ),
+              const Spacer(),
               Row(
                 children: [
                   Expanded(
@@ -180,7 +145,7 @@ class _GeneratePasswordScreenState extends ConsumerState<GeneratePasswordScreen>
                         );
                         Navigator.pop(context, _generatedPassword);
                       },
-                      child: const Text('COPY'),
+                      child: const Text('USE PASSWORD'),
                     ),
                   ),
                 ],
@@ -188,6 +153,66 @@ class _GeneratePasswordScreenState extends ConsumerState<GeneratePasswordScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLengthSelector(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'PASSWORD LENGTH: $_passwordLength',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: Theme.of(context).primaryColor,
+            inactiveTrackColor: Theme.of(context).primaryColor.withOpacity(0.2),
+            thumbColor: Theme.of(context).primaryColor,
+            overlayColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          ),
+          child: Slider(
+            value: _passwordLength.toDouble(),
+            min: 8,
+            max: 32,
+            divisions: 24,
+            onChanged: (value) {
+              setState(() {
+                _passwordLength = value.round();
+                _generatePassword();
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOptionSwitch(
+    BuildContext context,
+    String label,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Theme.of(context).primaryColor,
+          ),
+        ],
       ),
     );
   }

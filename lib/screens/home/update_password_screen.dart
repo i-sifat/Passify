@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/password_entry.dart';
+import '../../providers/password_provider.dart';
+import 'generate_password_screen.dart';
 
 class UpdatePasswordScreen extends ConsumerStatefulWidget {
   final PasswordEntry entry;
@@ -11,7 +13,8 @@ class UpdatePasswordScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
+  ConsumerState<UpdatePasswordScreen> createState() =>
+      _UpdatePasswordScreenState();
 }
 
 class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
@@ -37,6 +40,35 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _updatePassword() {
+    if (_nameController.text.isEmpty ||
+        _urlController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+        ),
+      );
+      return;
+    }
+
+    final updatedPassword = PasswordEntry(
+      name: _nameController.text,
+      url: _urlController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      lastUpdated: DateTime.now(),
+      icon: widget.entry.icon,
+      isCompromised: widget.entry.isCompromised,
+    );
+
+    ref
+        .read(passwordProvider.notifier)
+        .updatePassword(widget.entry, updatedPassword);
+    Navigator.pop(context);
   }
 
   @override
@@ -65,24 +97,28 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                 context,
                 'NAME',
                 _nameController,
+                hintText: 'Website/App Name',
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 context,
                 'URL',
                 _urlController,
+                hintText: 'Website/App Link',
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 context,
                 'EMAIL / USERNAME',
                 _emailController,
+                hintText: 'Email / Username',
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 context,
                 'PASSWORD',
                 _passwordController,
+                hintText: 'Password',
                 obscureText: _obscurePassword,
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -100,8 +136,16 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
               ),
               const SizedBox(height: 16),
               OutlinedButton(
-                onPressed: () {
-                  // TODO: Implement generate new password
+                onPressed: () async {
+                  final password = await Navigator.push<String>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GeneratePasswordScreen(),
+                    ),
+                  );
+                  if (password != null) {
+                    _passwordController.text = password;
+                  }
                 },
                 child: const Text('GENERATE NEW'),
               ),
@@ -109,10 +153,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement save changes
-                    Navigator.pop(context);
-                  },
+                  onPressed: _updatePassword,
                   child: const Text('SAVE CHANGES'),
                 ),
               ),
@@ -127,6 +168,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     BuildContext context,
     String label,
     TextEditingController controller, {
+    String? hintText,
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
@@ -144,6 +186,14 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.color
+                  ?.withOpacity(0.5),
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,

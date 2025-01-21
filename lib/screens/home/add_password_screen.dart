@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/password_entry.dart';
+import '../../providers/password_provider.dart';
 import 'generate_password_screen.dart';
 
 class AddPasswordScreen extends ConsumerStatefulWidget {
@@ -23,6 +25,32 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _addPassword() {
+    if (_nameController.text.isEmpty ||
+        _urlController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+        ),
+      );
+      return;
+    }
+
+    final newPassword = PasswordEntry(
+      name: _nameController.text,
+      url: _urlController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      lastUpdated: DateTime.now(),
+      icon: Icons.lock_outline,
+    );
+
+    ref.read(passwordProvider.notifier).addPassword(newPassword);
+    Navigator.pop(context);
   }
 
   @override
@@ -107,10 +135,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement add password
-                    Navigator.pop(context);
-                  },
+                  onPressed: _addPassword,
                   child: const Text('ADD PASSWORD'),
                 ),
               ),

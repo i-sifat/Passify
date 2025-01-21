@@ -12,6 +12,7 @@ class AuthNotifier extends StateNotifier<bool> {
 
   static const _authKey = 'is_authenticated';
   static const _firstTimeKey = 'is_first_time';
+  static const _userEmailKey = 'user_email';
 
   // Default credentials
   static const defaultEmail = 'passifyadmin@gmail.com';
@@ -43,6 +44,7 @@ class AuthNotifier extends StateNotifier<bool> {
     if (email == defaultEmail && password == defaultPassword) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_authKey, true);
+      await prefs.setString(_userEmailKey, email);
       state = true;
       return null;
     }
@@ -70,13 +72,20 @@ class AuthNotifier extends StateNotifier<bool> {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_authKey, true);
+    await prefs.setString(_userEmailKey, email);
     state = true;
     return null;
+  }
+
+  Future<String?> getUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userEmailKey);
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_authKey, false);
+    await prefs.remove(_userEmailKey);
     state = false;
   }
 }

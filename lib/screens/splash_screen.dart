@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/profile_provider.dart';
 import '../providers/theme_provider.dart';
 import 'onboarding/onboarding_screen.dart';
 import 'auth/login_screen.dart';
@@ -51,6 +52,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
 
     if (isAuthenticated) {
+      // Load the user's email into the profile provider
+      final email = await ref.read(authProvider.notifier).getUserEmail();
+      if (email != null) {
+        await ref.read(profileProvider.notifier).updateProfile(email: email);
+      }
       _navigateTo(const HomeScreen());
     } else if (isFirstTime) {
       _navigateTo(const OnboardingScreen());
@@ -102,7 +108,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     TextSpan(
                       text: 'PASS',
                       style: TextStyle(
-                        color: isDarkMode ? Colors.white : const Color(0xFF545974),
+                        color:
+                            isDarkMode ? Colors.white : const Color(0xFF545974),
                       ),
                     ),
                   ],

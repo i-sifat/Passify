@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/password_entry.dart';
+import '../../providers/password_provider.dart';
 import 'update_password_screen.dart';
 
 class PasswordDetailsScreen extends ConsumerWidget {
@@ -29,9 +31,9 @@ class PasswordDetailsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Not Compromised',
+                entry.isCompromised ? 'Compromised' : 'Not Compromised',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.green,
+                      color: entry.isCompromised ? Colors.red : Colors.green,
                     ),
               ),
               const SizedBox(height: 8),
@@ -52,6 +54,8 @@ class PasswordDetailsScreen extends ConsumerWidget {
                 Icons.link,
                 'URL',
                 entry.url,
+                showCopy: true,
+                onCopy: () => _copyToClipboard(context, entry.url),
               ),
               const SizedBox(height: 24),
               _buildDetailRow(
@@ -59,6 +63,8 @@ class PasswordDetailsScreen extends ConsumerWidget {
                 Icons.person,
                 'Email / Username',
                 entry.email,
+                showCopy: true,
+                onCopy: () => _copyToClipboard(context, entry.email),
               ),
               const SizedBox(height: 24),
               _buildDetailRow(
@@ -67,6 +73,7 @@ class PasswordDetailsScreen extends ConsumerWidget {
                 'Password',
                 entry.password,
                 showCopy: true,
+                onCopy: () => _copyToClipboard(context, entry.password),
               ),
               const Spacer(),
               Row(
@@ -74,7 +81,34 @@ class PasswordDetailsScreen extends ConsumerWidget {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        // TODO: Implement delete
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Password'),
+                            content: const Text(
+                              'Are you sure you want to delete this password?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('CANCEL'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  ref
+                                      .read(passwordProvider.notifier)
+                                      .deletePassword(entry);
+                                  Navigator.pop(context); // Close dialog
+                                  Navigator.pop(context); // Go back to home
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.red,
+                                ),
+                                child: const Text('DELETE'),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
@@ -108,12 +142,25 @@ class PasswordDetailsScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _copyToClipboard(BuildContext context, String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Copied to clipboard'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   Widget _buildDetailRow(
     BuildContext context,
     IconData icon,
     String label,
     String value, {
     bool showCopy = false,
+    VoidCallback? onCopy,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +170,11 @@ class PasswordDetailsScreen extends ConsumerWidget {
             Icon(
               icon,
               size: 16,
-              color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.5),
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.color
+                  ?.withOpacity(0.5),
             ),
             const SizedBox(width: 8),
             Text(
@@ -140,15 +191,13 @@ class PasswordDetailsScreen extends ConsumerWidget {
             Expanded(
               child: Text(value),
             ),
-            if (showCopy)
+            if (showCopy && onCopy != null)
               IconButton(
                 icon: Icon(
                   Icons.content_copy,
                   color: Theme.of(context).primaryColor,
                 ),
-                onPressed: () {
-                  // TODO: Implement copy
-                },
+                onPressed: onCopy,
               ),
           ],
         ),
