@@ -1,42 +1,84 @@
-# Passify - Password Manager
+# Passify
 
-A secure and user-friendly password manager built with Flutter.
+<p align="center">
+  <img src="https://github.com/i-sifat/Passify/blob/main/Images/Thumbnail.png" alt="Passify Icon" width="350">
+</p>
+
+### Powerful, cross-platform, open-source password manager 🔒
+
+[![Latest Release](https://img.shields.io/github/v/release/your-username/your-repo-name)](https://github.com/your-username/your-repo-name/releases)
+[![License](https://img.shields.io/github/license/your-username/your-repo-name)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/your-username/your-repo-name/total)](https://github.com/your-username/your-repo-name/releases)
+[![Contributors](https://img.shields.io/github/contributors/your-username/your-repo-name)](https://github.com/your-username/your-repo-name/graphs/contributors)
+
+**Passify** is a secure and easy-to-use password manager that helps you manage your passwords across all your devices. With Passify, you can store, organize, and access your passwords securely.
+
+---
 
 ## Features
 
-- Generate secure passwords
-- Store and manage passwords
-- Autofill support
-- Dark/Light theme
-- Biometric authentication
-- Secure storage
+- 🔐 **Secure Encryption**: Your data is encrypted using industry-standard encryption algorithms.
+- 🌐 **Cross-Platform**: Works seamlessly on Android, iOS, Windows, macOS, and the web.
+- 💾 **Offline Support**: Access your passwords even without an internet connection.
+- 📱 **Mobile-First Design**: Optimized for touch devices and small screens.
+- ☁️ **Cloud Integration**: Sync your passwords securely across devices via your favorite cloud service.
+- 📂 **Organized Categories**: Group your passwords into folders for better organization.
+- 🔎 **Search**: Quickly find passwords with an intuitive search feature.
+- 🛠️ **Customizable Settings**: Tailor Passify to your preferences with extensive customization options.
+- 🔑 **Generate Secure Passwords**: Create strong, unique passwords effortlessly.
+- 🗂️ **Store and Manage Passwords**: Save, organize, and access all your passwords in one place.
+- ⚡ **Autofill Support**: Quickly autofill passwords in apps and browsers.
+- 🌗 **Dark/Light Theme**: Choose between dark and light modes for better usability.
+- 🛡️ **Biometric Authentication**: Use fingerprint or facial recognition for secure access.
+- 🛠️ **Secure Storage**: Keep your data safe with robust storage solutions.
 
-## Download
+---
 
-You can download the latest APK from the [Releases](https://github.com/yourusername/passify/releases) section.
+## Getting Started
 
-## Screenshots
+1. **Download Passify**:
+   - [Android](https://github.com/i-sifat/Passify/releases)
+   - [iOS](#)
+   - [Windows](#)
+   - [macOS](#)
 
-[Add your screenshots here]
+2. **Install**:
+   - Follow the installation guide provided in the [release](https://github.com/i-sifat/Passify/releases).
 
-## Security
+3. **Usage**:
+   - Import your existing passwords or start adding new ones directly from the app.
 
-- All passwords are encrypted using AES-256
-- Biometric authentication support
-- No data is stored on external servers
-- All data is stored locally on your device
-
-## Building from Source
-
-1. Install Flutter (Channel Stable)
-2. Clone this repository
-3. Run `flutter pub get`
-4. Run `flutter build apk --release`
+---
 
 ## Contributing
 
-Feel free to open issues and pull requests for any improvements.
+We welcome contributions! Please read the [Contributing Guide](CONTRIBUTING.md) to get started. Whether it's reporting a bug, suggesting features, or submitting a pull request, your help is appreciated.
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Passify is open-source and licensed under the [AGPL-3.0](LICENSE). See the LICENSE file for details.
+
+---
+
+## Support
+
+For help or support, feel free to open an issue or join our community discussions [here](#).
+
+---
+
+### Screenshots
+
+![Screenshot 1](path/to/screenshot1.png)
+![Screenshot 2](path/to/screenshot2.png)
+
+---
+
+### Links
+
+- Website: [Passify](#)
+- Documentation: [Docs](#)
+- Community: [Discussions](#)
+
+---
