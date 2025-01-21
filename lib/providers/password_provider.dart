@@ -30,7 +30,8 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
         password: data['password'],
         lastUpdated: DateTime.parse(data['lastUpdated']),
         isCompromised: data['isCompromised'] ?? false,
-        icon: IconData(data['icon'], fontFamily: 'MaterialIcons'),
+        // Use a constant IconData
+        icon: Icons.lock_outline,
       );
     }).toList();
   }
@@ -45,7 +46,7 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
               'password': entry.password,
               'lastUpdated': entry.lastUpdated.toIso8601String(),
               'isCompromised': entry.isCompromised,
-              'icon': (entry.icon).codePoint,
+              // No need to store icon data as we'll use a constant
             }))
         .toList();
 
