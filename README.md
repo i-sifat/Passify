@@ -1,10 +1,11 @@
 # Passify
 
-<p align="center">
-  <img src="https://github.com/i-sifat/Passify/blob/main/Images/Thumbnail.png" alt="Passify Icon" width="200">
-</p>
+<img src="https://github.com/i-sifat/Passify/blob/main/Images/Thumbnail.png" width="350px" />
 
-### Powerful, cross-platform, open-source password manager 🔒
+# Butterfly
+
+> 🎨Powerful, cross-platform, open-source password manager 🔒 🎨
+
 
 [![Latest Release](https://img.shields.io/github/v/release/your-username/your-repo-name)](https://github.com/your-username/your-repo-name/releases)
 [![License](https://img.shields.io/github/license/your-username/your-repo-name)](LICENSE)
