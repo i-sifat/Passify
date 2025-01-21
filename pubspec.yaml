@@ -14,6 +14,10 @@ dependencies:
   flutter_riverpod: ^2.5.1
   shared_preferences: ^2.3.5
   smooth_page_indicator: ^1.1.0
+  file_picker: ^8.1.7
+  path_provider: ^2.1.5
+  crypto: ^3.0.6
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

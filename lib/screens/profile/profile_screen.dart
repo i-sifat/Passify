@@ -6,6 +6,7 @@ import '../../providers/theme_provider.dart';
 import '../auth/login_screen.dart';
 import 'edit_profile_screen.dart';
 import 'change_password_screen.dart';
+import 'backup_restore_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -96,6 +97,19 @@ class ProfileScreen extends ConsumerWidget {
               ),
               _buildMenuItem(
                 context,
+                'Backup and Restore',
+                Icons.backup_outlined,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BackupRestoreScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMenuItem(
+                context,
                 'Autofill Settings',
                 Icons.auto_awesome_outlined,
                 onTap: () {
@@ -105,7 +119,9 @@ class ProfileScreen extends ConsumerWidget {
               _buildMenuItem(
                 context,
                 isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-                isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
                 onTap: () {
                   ref.read(themeProvider.notifier).setTheme(
                         isDarkMode ? ThemeMode.light : ThemeMode.dark,
