@@ -96,4 +96,10 @@ class AuthNotifier extends StateNotifier<bool> {
     await prefs.remove(_userEmailKey);
     state = false;
   }
+
+  // Add this method to check authentication state
+  Future<bool> isAuthenticated() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_authKey) ?? false;
+  }
 }

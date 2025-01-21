@@ -48,22 +48,29 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    final isAuthenticated = ref.read(authProvider);
-    final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
-    final isOnboardingCompleted =
-        await ref.read(authProvider.notifier).isOnboardingCompleted();
+    // Check authentication state first
+    final isAuthenticated =
+        await ref.read(authProvider.notifier).isAuthenticated();
 
     if (isAuthenticated) {
-      // Load the user's email into the profile provider
+      // If authenticated, load user data and go to home
       final email = await ref.read(authProvider.notifier).getUserEmail();
       if (email != null) {
         await ref.read(profileProvider.notifier).updateProfile(email: email);
       }
+      ref.read(authProvider.notifier).state = true; // Update the auth state
       _navigateTo(const HomeScreen());
-    } else if (isFirstTime || !isOnboardingCompleted) {
-      _navigateTo(const OnboardingScreen());
     } else {
-      _navigateTo(const LoginScreen());
+      // If not authenticated, check onboarding status
+      final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
+      final isOnboardingCompleted =
+          await ref.read(authProvider.notifier).isOnboardingCompleted();
+
+      if (isFirstTime || !isOnboardingCompleted) {
+        _navigateTo(const OnboardingScreen());
+      } else {
+        _navigateTo(const LoginScreen());
+      }
     }
   }
 
