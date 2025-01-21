@@ -1,6 +1,8 @@
 # Passify
 
-![Passify Icon](https://github.com/i-sifat/Passify/blob/main/Images/Thumbnail.png)
+<p align="center">
+  <img src="https://github.com/i-sifat/Passify/blob/main/Images/Thumbnail.png" alt="Passify Icon" width="200">
+</p>
 
 ### Powerful, cross-platform, open-source password manager 🔒
 
@@ -16,11 +18,13 @@
 ## Features
 
 - 🔐 **Secure Encryption**: Your data is encrypted using industry-standard encryption algorithms.
+- 🌐 **Cross-Platform**: Works seamlessly on Android, iOS, Windows, macOS, and the web.
 - 💾 **Offline Support**: Access your passwords even without an internet connection.
 - 📱 **Mobile-First Design**: Optimized for touch devices and small screens.
 - ☁️ **Cloud Integration**: Sync your passwords securely across devices via your favorite cloud service.
 - 📂 **Organized Categories**: Group your passwords into folders for better organization.
 - 🔎 **Search**: Quickly find passwords with an intuitive search feature.
+- 🛠️ **Customizable Settings**: Tailor Passify to your preferences with extensive customization options.
 - 🔑 **Generate Secure Passwords**: Create strong, unique passwords effortlessly.
 - 🗂️ **Store and Manage Passwords**: Save, organize, and access all your passwords in one place.
 - ⚡ **Autofill Support**: Quickly autofill passwords in apps and browsers.
