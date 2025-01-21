@@ -105,13 +105,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         color: Theme.of(context).primaryColor,
                       ),
                     ),
-                    TextSpan(
-                      text: 'PASS',
-                      style: TextStyle(
-                        color:
-                            isDarkMode ? Colors.white : const Color(0xFF545974),
-                      ),
-                    ),
                   ],
                 ),
               ),
