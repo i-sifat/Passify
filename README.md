@@ -70,12 +70,13 @@ For help or support, feel free to open an issue or join our community discussion
 
 ### Screenshots
 
-![Screenshot 1](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467073.png)
-![Screenshot 2](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467079.png)
-![Screenshot 3](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467085.png)
-![Screenshot 4](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467090.png)
-![Screenshot 5](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467095.png)
+<img src=".github/Images/Screenshot_1737467073.png" width="300" height="200" alt="Screenshot 1">
+<img src=".github/Images/Screenshot_1737467079.png" width="300" height="200" alt="Screenshot 2">
+<img src=".github/Images/Screenshot_1737467085.png" width="300" height="200" alt="Screenshot 3">
+<img src=".github/Images/Screenshot_1737467090.png" width="300" height="200" alt="Screenshot 4">
+<img src=".github/Images/Screenshot_1737467095.png" width="300" height="200" alt="Screenshot 5">
 ---
+
 
 ### Links
 
