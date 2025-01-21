@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:crypto/crypto.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/password_entry.dart';
 
 class BackupService {
@@ -60,69 +60,59 @@ class BackupService {
       final directory = await getApplicationDocumentsDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = 'passify_backup_$timestamp.$fileExtension';
-      final tempFilePath = '${directory.path}/$fileName';
+      final filePath = '${directory.path}/$fileName';
 
-      // Save the backup file to temp location
-      final tempFile = File(tempFilePath);
-      await tempFile.writeAsString(backupContent);
+      // Save the backup file
+      final file = File(filePath);
+      await file.writeAsString(backupContent);
 
-      // Let user choose save location
-      final String? outputPath = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Backup File',
-        fileName: fileName,
-        type: FileType.custom,
-        allowedExtensions: [fileExtension],
+      // Share the file
+      final result = await Share.shareXFiles(
+        [XFile(filePath)],
+        subject: 'Passify Backup',
       );
 
-      if (outputPath == null) {
-        // User cancelled, clean up temp file
-        await tempFile.delete();
-        return null;
-      }
+      // Clean up the temporary file
+      await file.delete();
 
-      // Ensure output path has correct extension
-      final String finalPath = outputPath.endsWith('.$fileExtension')
-          ? outputPath
-          : '$outputPath.$fileExtension';
-
-      // Create output file and write content directly
-      final outputFile = File(finalPath);
-      await outputFile.writeAsString(backupContent);
-
-      // Clean up temp file
-      await tempFile.delete();
-
-      return finalPath;
+      return result.raw.isEmpty ? null : filePath;
     } catch (e) {
       debugPrint('Backup error: $e');
       rethrow;
     }
   }
 
-  Future<List<PasswordEntry>> restorePasswords(String masterPassword) async {
+  Future<List<PasswordEntry>?> restorePasswords(String masterPassword) async {
     try {
-      // Pick backup file
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: [fileExtension],
-        allowMultiple: false,
+      // Get the app's documents directory
+      final directory = await getApplicationDocumentsDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final tempDir = Directory('${directory.path}/temp_$timestamp');
+      await tempDir.create();
+
+      // Open file picker
+      final result = await Share.shareXFiles(
+        [],
+        subject: 'Select Passify Backup File',
       );
 
-      if (result == null || result.files.isEmpty) {
-        throw Exception('No file selected');
+      if (result.raw.isEmpty) {
+        await tempDir.delete(recursive: true);
+        return null;
       }
 
-      final path = result.files.first.path;
-      if (path == null) {
-        throw Exception('Invalid file path');
-      }
+      // Since result.raw is a String, we'll use it directly as the file path
+      final filePath = result.raw;
+      final file = File(filePath);
 
-      final file = File(path);
       if (!await file.exists()) {
+        await tempDir.delete(recursive: true);
         throw Exception('Selected file does not exist');
       }
 
       final content = await file.readAsString();
+      await tempDir.delete(recursive: true);
+
       if (content.isEmpty) {
         throw Exception('Backup file is empty');
       }
