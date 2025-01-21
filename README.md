@@ -70,9 +70,11 @@ For help or support, feel free to open an issue or join our community discussion
 
 ### Screenshots
 
-![Screenshot 1](path/to/screenshot1.png)
-![Screenshot 2](path/to/screenshot2.png)
-
+![Screenshot 1](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467073.png)
+![Screenshot 2](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467079.png)
+![Screenshot 3](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467085.png)
+![Screenshot 4](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467090.png)
+![Screenshot 5](https://github.com/i-sifat/Passify/blob/main/Images/Screenshot_1737467095.png)
 ---
 
 ### Links
