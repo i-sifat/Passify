@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../auth/register_screen.dart';
 import 'onboarding_page.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
 
@@ -36,6 +38,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _completeOnboarding() async {
+    await ref.read(authProvider.notifier).completeOnboarding();
   }
 
   @override
@@ -118,6 +124,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
+                        _completeOnboarding();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -132,6 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                        _completeOnboarding();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

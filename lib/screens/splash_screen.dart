@@ -50,6 +50,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     final isAuthenticated = ref.read(authProvider);
     final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
+    final isOnboardingCompleted =
+        await ref.read(authProvider.notifier).isOnboardingCompleted();
 
     if (isAuthenticated) {
       // Load the user's email into the profile provider
@@ -58,7 +60,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         await ref.read(profileProvider.notifier).updateProfile(email: email);
       }
       _navigateTo(const HomeScreen());
-    } else if (isFirstTime) {
+    } else if (isFirstTime || !isOnboardingCompleted) {
       _navigateTo(const OnboardingScreen());
     } else {
       _navigateTo(const LoginScreen());

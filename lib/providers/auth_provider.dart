@@ -13,6 +13,7 @@ class AuthNotifier extends StateNotifier<bool> {
   static const _authKey = 'is_authenticated';
   static const _firstTimeKey = 'is_first_time';
   static const _userEmailKey = 'user_email';
+  static const _onboardingCompletedKey = 'onboarding_completed';
 
   // Default credentials
   static const defaultEmail = 'passifyadmin@gmail.com';
@@ -25,11 +26,18 @@ class AuthNotifier extends StateNotifier<bool> {
 
   Future<bool> isFirstTime() async {
     final prefs = await SharedPreferences.getInstance();
-    final isFirstTime = prefs.getBool(_firstTimeKey) ?? true;
-    if (isFirstTime) {
-      await prefs.setBool(_firstTimeKey, false);
-    }
-    return isFirstTime;
+    return prefs.getBool(_firstTimeKey) ?? true;
+  }
+
+  Future<bool> isOnboardingCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_onboardingCompletedKey) ?? false;
+  }
+
+  Future<void> completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_firstTimeKey, false);
+    await prefs.setBool(_onboardingCompletedKey, true);
   }
 
   Future<String?> login(String email, String password) async {
