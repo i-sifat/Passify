@@ -1,18 +1,22 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'secure_storage_service.dart';
 
 class MasterPasswordService {
-  static const _storage = FlutterSecureStorage();
   static const _masterPasswordKey = 'master_password';
+  late final SecureStorageService _storage;
+
+  Future<void> initialize() async {
+    _storage = await SecureStorageService.getInstance();
+  }
 
   Future<void> saveMasterPassword(String password) async {
     final hashedPassword = _hashPassword(password);
-    await _storage.write(key: _masterPasswordKey, value: hashedPassword);
+    await _storage.write(_masterPasswordKey, hashedPassword);
   }
 
   Future<bool> verifyMasterPassword(String password) async {
-    final storedHash = await _storage.read(key: _masterPasswordKey);
+    final storedHash = await _storage.read(_masterPasswordKey);
     if (storedHash == null) return false;
 
     final inputHash = _hashPassword(password);
@@ -20,7 +24,7 @@ class MasterPasswordService {
   }
 
   Future<bool> hasMasterPassword() async {
-    final storedHash = await _storage.read(key: _masterPasswordKey);
+    final storedHash = await _storage.read(_masterPasswordKey);
     return storedHash != null;
   }
 
