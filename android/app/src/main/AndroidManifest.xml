@@ -22,14 +22,17 @@
               android:resource="@style/NormalTheme"
               />
             <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Separate intent filter for file handling -->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:mimeType="application/octet-stream" />
                 <data android:scheme="content" />
                 <data android:scheme="file" />
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <meta-data
