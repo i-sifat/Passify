@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../services/backup_service.dart';
 import '../models/password_entry.dart';
 
@@ -58,7 +57,7 @@ class BackupNotifier extends StateNotifier<BackupState> {
     state = state.copyWith(lastBackupDate: now);
   }
 
-  Future<bool> backup(
+  Future<bool> performBackup(
       List<PasswordEntry> passwords, String masterPassword) async {
     try {
       state = state.copyWith(isProcessing: true, error: null);

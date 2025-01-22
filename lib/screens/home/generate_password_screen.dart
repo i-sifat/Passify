@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vibration/vibration.dart';
 
 class GeneratePasswordScreen extends ConsumerStatefulWidget {
   const GeneratePasswordScreen({super.key});
@@ -46,6 +47,14 @@ class _GeneratePasswordScreenState
     _generatedPassword = List.generate(
         _passwordLength, (index) => chars[random.nextInt(chars.length)]).join();
     setState(() {});
+  }
+
+  void _onSliderChanged(double value) {
+    Vibration.vibrate(duration: 10);
+    setState(() {
+      _passwordLength = value.round();
+      _generatePassword();
+    });
   }
 
   @override
@@ -180,12 +189,7 @@ class _GeneratePasswordScreenState
             min: 8,
             max: 32,
             divisions: 24,
-            onChanged: (value) {
-              setState(() {
-                _passwordLength = value.round();
-                _generatePassword();
-              });
-            },
+            onChanged: _onSliderChanged,
           ),
         ),
       ],

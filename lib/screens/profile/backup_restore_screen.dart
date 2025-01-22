@@ -26,13 +26,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   }
 
   Future<void> _handleBackup() async {
-    if (_masterPasswordController.text.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a master password');
-      return;
-    }
-
     final currentPasswords = ref.read(passwordProvider);
-    final success = await ref.read(backupProvider.notifier).backup(
+    final success = await ref.read(backupProvider.notifier).performBackup(
           currentPasswords,
           _masterPasswordController.text,
         );
@@ -54,11 +49,6 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   }
 
   Future<void> _handleRestore() async {
-    if (_masterPasswordController.text.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a master password');
-      return;
-    }
-
     final restoredPasswords = await ref.read(backupProvider.notifier).restore(
           _masterPasswordController.text,
         );
@@ -139,29 +129,6 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
               ],
               const SizedBox(height: 32),
               if (_showMasterPasswordInput) ...[
-                Text(
-                  'MASTER PASSWORD',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _masterPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: '********',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).brightness == Brightness.light
-                        ? Colors.grey[100]
-                        : Colors.grey[800],
-                  ),
-                ),
-                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

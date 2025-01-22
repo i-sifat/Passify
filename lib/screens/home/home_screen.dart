@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/password_entry.dart';
 import '../../providers/password_provider.dart';
 import '../profile/profile_screen.dart';
 import 'add_password_screen.dart';
@@ -50,7 +49,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.light
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Colors.grey[100]
                                   : Colors.grey[800],
                               borderRadius: BorderRadius.circular(8),
@@ -76,7 +76,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.light
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Colors.grey[100]
                                   : Colors.grey[800],
                               borderRadius: BorderRadius.circular(8),
@@ -116,9 +117,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Theme.of(context).brightness == Brightness.light
-                            ? Colors.grey[100]
-                            : Colors.grey[800],
+                        fillColor:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Colors.grey[100]
+                                : Colors.grey[800],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -164,7 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => PasswordDetailsScreen(
+                                        builder: (context) =>
+                                            PasswordDetailsScreen(
                                           entry: passwords[index],
                                         ),
                                       ),

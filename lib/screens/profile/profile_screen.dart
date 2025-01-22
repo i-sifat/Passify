@@ -1,12 +1,14 @@
+// Update the profile screen to include the new sections
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../services/update_service.dart';
 import '../auth/login_screen.dart';
 import 'edit_profile_screen.dart';
-import 'change_password_screen.dart';
 import 'backup_restore_screen.dart';
+import 'master_password_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -15,6 +17,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileProvider);
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+    final updateService = UpdateService();
 
     return Scaffold(
       body: SafeArea(
@@ -84,13 +87,13 @@ class ProfileScreen extends ConsumerWidget {
               ),
               _buildMenuItem(
                 context,
-                'Change Master Password',
+                'Master Password',
                 Icons.lock_outline,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ChangePasswordScreen(),
+                      builder: (context) => const MasterPasswordScreen(),
                     ),
                   );
                 },
@@ -110,10 +113,49 @@ class ProfileScreen extends ConsumerWidget {
               ),
               _buildMenuItem(
                 context,
-                'Autofill Settings',
-                Icons.auto_awesome_outlined,
-                onTap: () {
-                  // TODO: Implement autofill settings
+                'Check for Updates',
+                Icons.system_update_outlined,
+                onTap: () async {
+                  final updateInfo = await updateService.checkForUpdates();
+                  if (context.mounted) {
+                    if (updateInfo != null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Update Available'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('New version: ${updateInfo.latestVersion}'),
+                              const SizedBox(height: 8),
+                              const Text('Release Notes:'),
+                              Text(updateInfo.releaseNotes),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('LATER'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Handle update download and installation
+                                Navigator.pop(context);
+                              },
+                              child: const Text('UPDATE NOW'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('You are using the latest version'),
+                        ),
+                      );
+                    }
+                  }
                 },
               ),
               _buildMenuItem(
