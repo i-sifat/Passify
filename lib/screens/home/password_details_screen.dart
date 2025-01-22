@@ -170,11 +170,8 @@ class PasswordDetailsScreen extends ConsumerWidget {
             Icon(
               icon,
               size: 16,
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.color
-                  ?.withOpacity(0.5),
+              color:
+                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
             ),
             const SizedBox(width: 8),
             Text(

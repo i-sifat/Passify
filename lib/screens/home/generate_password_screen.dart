@@ -180,9 +180,9 @@ class _GeneratePasswordScreenState
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Theme.of(context).primaryColor,
-            inactiveTrackColor: Theme.of(context).primaryColor.withOpacity(0.2),
+            inactiveTrackColor: Theme.of(context).primaryColor.withAlpha(51),
             thumbColor: Theme.of(context).primaryColor,
-            overlayColor: Theme.of(context).primaryColor.withOpacity(0.1),
+            overlayColor: Theme.of(context).primaryColor.withAlpha(26),
           ),
           child: Slider(
             value: _passwordLength.toDouble(),

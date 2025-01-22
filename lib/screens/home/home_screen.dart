@@ -135,7 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     size: 64,
                                     color: Theme.of(context)
                                         .primaryColor
-                                        .withOpacity(0.5),
+                                        .withAlpha(128),
                                   ),
                                   const SizedBox(height: 16),
                                   const Text('NO PASSWORDS'),
@@ -151,7 +151,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               .textTheme
                                               .bodyLarge
                                               ?.color
-                                              ?.withOpacity(0.5),
+                                              ?.withAlpha(128),
                                         ),
                                   ),
                                 ],

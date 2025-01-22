@@ -22,7 +22,7 @@ class AppTheme {
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
-          color: lightTextColor.withOpacity(0.7),
+          color: lightTextColor.withAlpha(179),
         ),
         labelLarge: GoogleFonts.inter(
           fontSize: 16,
@@ -67,7 +67,7 @@ class AppTheme {
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
-          color: darkTextColor.withOpacity(0.7),
+          color: darkTextColor.withAlpha(179),
         ),
         labelLarge: GoogleFonts.inter(
           fontSize: 16,

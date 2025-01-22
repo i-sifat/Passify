@@ -58,7 +58,7 @@ class PasswordSearchDelegate extends SearchDelegate<String> {
             Icon(
               Icons.search,
               size: 64,
-              color: Theme.of(context).primaryColor.withOpacity(0.5),
+              color: Theme.of(context).primaryColor.withAlpha(128),
             ),
             const SizedBox(height: 16),
             const Text('NO RESULTS'),
@@ -71,7 +71,7 @@ class PasswordSearchDelegate extends SearchDelegate<String> {
                         .textTheme
                         .bodyLarge
                         ?.color
-                        ?.withOpacity(0.5),
+                        ?.withAlpha(128),
                   ),
             ),
           ],

@@ -212,7 +212,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             hintText: hintText,
             hintStyle: TextStyle(
               color:
-                  Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.5),
+                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

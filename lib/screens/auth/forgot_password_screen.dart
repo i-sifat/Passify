@@ -66,16 +66,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             .textTheme
                             .bodyLarge
                             ?.color
-                            ?.withOpacity(0.5),
+                            ?.withAlpha(128),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).brightness == Brightness.light
-                          ? Colors.grey[100]
-                          : Colors.grey[800],
+                      fillColor:
+                          Theme.of(context).brightness == Brightness.light
+                              ? Colors.grey[100]
+                              : Colors.grey[800],
                     ),
                   ),
                 ],

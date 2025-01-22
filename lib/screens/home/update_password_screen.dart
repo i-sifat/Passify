@@ -188,11 +188,8 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.color
-                  ?.withOpacity(0.5),
+              color:
+                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

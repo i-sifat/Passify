@@ -38,7 +38,6 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       return;
     }
 
-    // TODO: Implement password change logic
     Navigator.pop(context);
   }
 

@@ -6,7 +6,8 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -67,16 +68,17 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             .textTheme
                             .bodyLarge
                             ?.color
-                            ?.withOpacity(0.5),
+                            ?.withAlpha(128),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).brightness == Brightness.light
-                          ? Colors.grey[100]
-                          : Colors.grey[800],
+                      fillColor:
+                          Theme.of(context).brightness == Brightness.light
+                              ? Colors.grey[100]
+                              : Colors.grey[800],
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword

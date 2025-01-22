@@ -38,7 +38,7 @@ class ProfileScreen extends ConsumerWidget {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(context).primaryColor.withAlpha(26),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: Theme.of(context).primaryColor,
@@ -65,7 +65,7 @@ class ProfileScreen extends ConsumerWidget {
                                 .textTheme
                                 .bodyLarge
                                 ?.color
-                                ?.withOpacity(0.7),
+                                ?.withAlpha(179),
                           ),
                     ),
                   ],
@@ -198,7 +198,7 @@ class ProfileScreen extends ConsumerWidget {
                             .textTheme
                             .bodySmall
                             ?.color
-                            ?.withOpacity(0.5),
+                            ?.withAlpha(128),
                       ),
                 ),
               ),

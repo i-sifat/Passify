@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
-import '../providers/theme_provider.dart';
 import 'onboarding/onboarding_screen.dart';
 import 'auth/login_screen.dart';
 import 'home/home_screen.dart';
@@ -91,8 +90,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
-
     return Scaffold(
       body: FadeTransition(
         opacity: _fadeAnimation,

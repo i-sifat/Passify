@@ -97,7 +97,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.5),
+                                      .withAlpha(128),
                             ),
                             child: Text('${index + 1}'),
                           ),

@@ -16,10 +16,9 @@ class PasswordEntry {
     required this.password,
     required this.lastUpdated,
     this.isCompromised = false,
-    required this.icon,
+    this.icon = Icons.lock_outline, // Make it a constant default value
   });
 
-  // Add the fromJson method to convert JSON into a PasswordEntry
   factory PasswordEntry.fromJson(Map<String, dynamic> json) {
     return PasswordEntry(
       name: json['name'] as String,
@@ -28,11 +27,10 @@ class PasswordEntry {
       password: json['password'] as String,
       lastUpdated: DateTime.parse(json['lastUpdated'] as String),
       isCompromised: json['isCompromised'] as bool? ?? false,
-      icon: IconData(json['icon'] as int),
+      icon: Icons.lock_outline, // Always use a constant icon
     );
   }
 
-  // Convert to JSON method (already defined)
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -41,7 +39,7 @@ class PasswordEntry {
       'password': password,
       'lastUpdated': lastUpdated.toIso8601String(),
       'isCompromised': isCompromised,
-      'icon': icon.codePoint,
+      // Don't store the icon since we'll always use lock_outline
     };
   }
 }
