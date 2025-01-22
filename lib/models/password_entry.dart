@@ -18,4 +18,30 @@ class PasswordEntry {
     this.isCompromised = false,
     required this.icon,
   });
+
+  // Add the fromJson method to convert JSON into a PasswordEntry
+  factory PasswordEntry.fromJson(Map<String, dynamic> json) {
+    return PasswordEntry(
+      name: json['name'] as String,
+      url: json['url'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+      isCompromised: json['isCompromised'] as bool? ?? false,
+      icon: IconData(json['icon'] as int),
+    );
+  }
+
+  // Convert to JSON method (already defined)
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'url': url,
+      'email': email,
+      'password': password,
+      'lastUpdated': lastUpdated.toIso8601String(),
+      'isCompromised': isCompromised,
+      'icon': icon.codePoint,
+    };
+  }
 }

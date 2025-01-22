@@ -80,35 +80,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ),
                   Positioned(
                     left: 24,
-                    top: 24,
-                    child: Column(
+                    bottom: 24,
+                    child: Row(
                       children: List.generate(
                         _pages.length,
                         (index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: AnimatedContainer(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 300),
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                            style: TextStyle(
+                              fontSize: _currentPage == index ? 24 : 16,
+                              fontWeight: _currentPage == index
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                               color: _currentPage == index
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.2),
+                                      .withOpacity(0.5),
                             ),
-                            child: Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  color: _currentPage == index
-                                      ? Colors.white
-                                      : Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                            child: Text('${index + 1}'),
                           ),
                         ),
                       ),

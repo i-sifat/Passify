@@ -1,160 +1,139 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import '../models/password_entry.dart';
 
 class BackupService {
   static const String fileExtension = 'passifybackup';
 
-  // Generate encryption key from master password
-  encrypt.Key _generateKey(String masterPassword) {
-    final bytes = utf8.encode(masterPassword);
-    final hash = sha256.convert(bytes);
-    return encrypt.Key.fromBase64(base64Encode(hash.bytes));
-  }
-
-  // Generate IV for encryption
-  encrypt.IV _generateIV() {
-    return encrypt.IV.fromSecureRandom(16);
-  }
-
+  /// Generates a backup file for the given passwords.
   Future<String?> backupPasswords(
-    List<PasswordEntry> passwords,
-    String masterPassword,
-  ) async {
+      List<PasswordEntry> passwords, String masterPassword) async {
     try {
-      // Convert passwords to JSON
-      final passwordsJson = passwords
-          .map((p) => {
-                'name': p.name,
-                'url': p.url,
-                'email': p.email,
-                'password': p.password,
-                'lastUpdated': p.lastUpdated.toIso8601String(),
-                'isCompromised': p.isCompromised,
-              })
-          .toList();
+      // Convert passwords to JSON.
+      final passwordsJson = passwords.map((p) => p.toJson()).toList();
 
-      // Encrypt data
+      // Generate encryption key and IV.
       final key = _generateKey(masterPassword);
       final iv = _generateIV();
+
+      // Encrypt the data.
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final encrypted = encrypter.encrypt(jsonEncode(passwordsJson), iv: iv);
 
-      final jsonString = jsonEncode(passwordsJson);
-      final encrypted = encrypter.encrypt(jsonString, iv: iv);
-
-      // Create backup data with IV
-      final backupData = {
+      // Create backup content.
+      final backupContent = jsonEncode({
         'iv': base64Encode(iv.bytes),
         'data': encrypted.base64,
-      };
+      });
 
-      final backupContent = jsonEncode(backupData);
-
-      // Get the app's documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'passify_backup_$timestamp.$fileExtension';
-      final filePath = '${directory.path}/$fileName';
-
-      // Save the backup file
-      final file = File(filePath);
-      await file.writeAsString(backupContent);
-
-      // Share the file
-      final result = await Share.shareXFiles(
-        [XFile(filePath)],
-        subject: 'Passify Backup',
+      // Prompt the user to save the file.
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Passify Backup',
+        fileName:
+            'passify_backup_${DateTime.now().millisecondsSinceEpoch}.$fileExtension',
+        type: FileType.custom,
+        allowedExtensions: [fileExtension],
       );
 
-      // Clean up the temporary file
-      await file.delete();
-
-      return result.raw.isEmpty ? null : filePath;
-    } catch (e) {
-      debugPrint('Backup error: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<PasswordEntry>?> restorePasswords(String masterPassword) async {
-    try {
-      // Get the app's documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final tempDir = Directory('${directory.path}/temp_$timestamp');
-      await tempDir.create();
-
-      // Open file picker
-      final result = await Share.shareXFiles(
-        [],
-        subject: 'Select Passify Backup File',
-      );
-
-      if (result.raw.isEmpty) {
-        await tempDir.delete(recursive: true);
+      if (outputFile == null || outputFile.isEmpty) {
+        debugPrint('Save operation canceled.');
         return null;
       }
 
-      // Since result.raw is a String, we'll use it directly as the file path
-      final filePath = result.raw;
-      final file = File(filePath);
-
-      if (!await file.exists()) {
-        await tempDir.delete(recursive: true);
-        throw Exception('Selected file does not exist');
-      }
-
-      final content = await file.readAsString();
-      await tempDir.delete(recursive: true);
-
-      if (content.isEmpty) {
-        throw Exception('Backup file is empty');
-      }
-
-      Map<String, dynamic> backupData;
-      try {
-        backupData = jsonDecode(content) as Map<String, dynamic>;
-      } catch (e) {
-        throw Exception('Invalid backup file format');
-      }
-
-      if (!backupData.containsKey('iv') || !backupData.containsKey('data')) {
-        throw Exception('Invalid backup file structure');
-      }
-
-      // Decrypt data
-      final key = _generateKey(masterPassword);
-      final iv = encrypt.IV.fromBase64(backupData['iv'] as String);
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-
-      try {
-        final decrypted =
-            encrypter.decrypt64(backupData['data'] as String, iv: iv);
-        final passwordsJson = jsonDecode(decrypted) as List;
-
-        return passwordsJson
-            .map((json) => PasswordEntry(
-                  name: json['name'] as String,
-                  url: json['url'] as String,
-                  email: json['email'] as String,
-                  password: json['password'] as String,
-                  lastUpdated: DateTime.parse(json['lastUpdated'] as String),
-                  isCompromised: json['isCompromised'] as bool? ?? false,
-                  icon: Icons.lock_outline,
-                ))
-            .toList();
-      } catch (e) {
-        throw Exception('Invalid master password or corrupted backup file');
-      }
-    } catch (e) {
-      debugPrint('Restore error: $e');
-      rethrow;
+      // Write content to the file.
+      await File(outputFile).writeAsString(backupContent);
+      return outputFile;
+    } catch (e, stacktrace) {
+      debugPrint('Error creating backup: $e');
+      debugPrint('Stacktrace: $stacktrace');
+      return null;
     }
+  }
+
+  /// Restores passwords from a backup file.
+  Future<List<PasswordEntry>?> restorePasswords(String masterPassword) async {
+    try {
+      // Let the user pick a file.
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [fileExtension],
+      );
+
+      if (result == null || result.files.isEmpty) {
+        debugPrint('No file selected.');
+        return null;
+      }
+
+      // Read the file content.
+      final filePath = result.files.single.path;
+      if (filePath == null || filePath.isEmpty) {
+        debugPrint('File path is invalid or empty.');
+        return null;
+      }
+
+      final fileContent = await File(filePath).readAsString();
+      final Map<String, dynamic> backupData = jsonDecode(fileContent);
+
+      // Extract IV and encrypted data.
+      final iv = encrypt.IV(base64Decode(backupData['iv'] as String));
+      final encryptedData = backupData['data'] as String;
+
+      // Decrypt the data.
+      final key = _generateKey(masterPassword);
+      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final decrypted = encrypter
+          .decrypt(encrypt.Encrypted.fromBase64(encryptedData), iv: iv);
+
+      // Parse JSON back to a list of PasswordEntry objects.
+      final List<dynamic> passwordsJson = jsonDecode(decrypted);
+      return passwordsJson.map((json) => PasswordEntry.fromJson(json)).toList();
+    } catch (e, stacktrace) {
+      debugPrint('Error restoring backup: $e');
+      debugPrint('Stacktrace: $stacktrace');
+      return null;
+    }
+  }
+
+  /// Generates a 32-byte encryption key from the master password.
+  encrypt.Key _generateKey(String masterPassword) {
+    final key = List<int>.generate(32,
+        (i) => i < masterPassword.length ? masterPassword.codeUnitAt(i) : 0);
+    return encrypt.Key(Uint8List.fromList(key));
+  }
+
+  /// Generates a 16-byte random IV.
+  encrypt.IV _generateIV() {
+    final random = encrypt.SecureRandom(16);
+    return encrypt.IV(random.bytes);
+  }
+}
+
+/// A model class representing a password entry.
+/// Replace this with your actual implementation.
+class PasswordEntry {
+  final String title;
+  final String username;
+  final String password;
+
+  PasswordEntry(
+      {required this.title, required this.username, required this.password});
+
+  /// Converts a PasswordEntry to JSON.
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'username': username,
+        'password': password,
+      };
+
+  /// Creates a PasswordEntry from JSON.
+  factory PasswordEntry.fromJson(Map<String, dynamic> json) {
+    return PasswordEntry(
+      title: json['title'],
+      username: json['username'],
+      password: json['password'],
+    );
   }
 }
