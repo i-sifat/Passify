@@ -17,7 +17,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileProvider);
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
-    final isAutofillEnabled = ref.watch(autofillProvider);
+    // final isAutofillEnabled = ref.watch(autofillProvider);
     final updateService = UpdateService();
 
     return Scaffold(
@@ -112,30 +112,30 @@ class ProfileScreen extends ConsumerWidget {
                   );
                 },
               ),
-              _buildMenuItem(
-                context,
-                'Autofill',
-                Icons.password_outlined,
-                trailing: Switch(
-                  value: isAutofillEnabled,
-                  onChanged: (value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AutofillSettingsScreen(),
-                      ),
-                    );
-                  },
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AutofillSettingsScreen(),
-                    ),
-                  );
-                },
-              ),
+              // _buildMenuItem(
+              //   context,
+              //   'Autofill',
+              //   Icons.password_outlined,
+              //   trailing: Switch(
+              //     value: isAutofillEnabled,
+              //     onChanged: (value) {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (context) => const AutofillSettingsScreen(),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const AutofillSettingsScreen(),
+              //       ),
+              //     );
+              //   },
+              // ),
               _buildMenuItem(
                 context,
                 'Check for Updates',
