@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
-import '../home/home_screen.dart';
+import '../../providers/master_password_provider.dart';
+import 'master_password_screen.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
@@ -37,9 +38,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     if (mounted) {
+      final hasMasterPassword = ref.read(masterPasswordProvider);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => MasterPasswordScreen(
+            isInitialSetup: !hasMasterPassword,
+          ),
+        ),
       );
     }
   }
