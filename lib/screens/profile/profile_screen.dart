@@ -17,6 +17,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileProvider);
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+    final isAutofillEnabled = ref.watch(autofillProvider);
     final updateService = UpdateService();
 
     return Scaffold(
@@ -113,6 +114,30 @@ class ProfileScreen extends ConsumerWidget {
               ),
               _buildMenuItem(
                 context,
+                'Autofill',
+                Icons.password_outlined,
+                trailing: Switch(
+                  value: isAutofillEnabled,
+                  onChanged: (value) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AutofillSettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AutofillSettingsScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMenuItem(
+                context,
                 'Check for Updates',
                 Icons.system_update_outlined,
                 onTap: () async {
@@ -140,7 +165,6 @@ class ProfileScreen extends ConsumerWidget {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                // Handle update download and installation
                                 Navigator.pop(context);
                               },
                               child: const Text('UPDATE NOW'),
@@ -215,6 +239,7 @@ class ProfileScreen extends ConsumerWidget {
     IconData icon, {
     required VoidCallback onTap,
     Color? color,
+    Widget? trailing,
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -228,6 +253,7 @@ class ProfileScreen extends ConsumerWidget {
           color: color,
         ),
       ),
+      trailing: trailing,
       onTap: onTap,
     );
   }
