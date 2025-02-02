@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/password_provider.dart';
 import '../profile/profile_screen.dart';
 import 'add_password_screen.dart';
 import 'password_details_screen.dart';
-import 'password_tile.dart';
 import 'search_delegate.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -33,11 +33,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '***',
+                          'Passify',
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'BebasNeue',
                           ),
                         ),
                       ],
@@ -160,19 +161,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           : ListView.builder(
                               itemCount: passwords.length,
                               itemBuilder: (context, index) {
-                                return PasswordTile(
-                                  entry: passwords[index],
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            PasswordDetailsScreen(
-                                          entry: passwords[index],
+                                final entry = passwords[index];
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(vertical: 8),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PasswordDetailsScreen(
+                                            entry: entry,
+                                          ),
                                         ),
+                                      );
+                                    },
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
+                                        width: 35,
+                                        height: 35,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).brightness ==
+                                                      Brightness.light
+                                                  ? Colors.grey[200]
+                                                  : Colors.grey[700],
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(Icons.lock_outline),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
+                                    ),
+                                    title: Text(
+                                      entry.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(
+                                        Icons.content_copy,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      onPressed: () {
+                                        Clipboard.setData(
+                                            ClipboardData(text: entry.password));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Password copied to clipboard'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                                 );
                               },
                             ),
