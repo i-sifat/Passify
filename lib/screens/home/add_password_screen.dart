@@ -72,7 +72,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         !_urlController.text.startsWith('https://')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a valid URL starting with http:// or https://'),
+          content: Text(
+              'Please enter a valid URL starting with http:// or https://'),
         ),
       );
       return;
@@ -214,7 +215,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
             return _getSuggestions(textEditingValue.text);
           },
           onSelected: _onPlatformSelected,
-          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+          fieldViewBuilder:
+              (context, textEditingController, focusNode, onFieldSubmitted) {
             return TextField(
               controller: textEditingController,
               focusNode: focusNode,

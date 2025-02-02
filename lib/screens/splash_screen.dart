@@ -22,7 +22,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 800), // Reduced duration
       vsync: this,
     );
 
@@ -44,26 +44,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 1000)); // Reduced delay
     if (!mounted) return;
 
-    // Check authentication state first
-    final isAuthenticated =
-        await ref.read(authProvider.notifier).isAuthenticated();
+    final isAuthenticated = await ref.read(authProvider.notifier).isAuthenticated();
 
     if (isAuthenticated) {
-      // If authenticated, load user data and go to home
       final email = await ref.read(authProvider.notifier).getUserEmail();
       if (email != null) {
         await ref.read(profileProvider.notifier).updateProfile(email: email);
       }
-      ref.read(authProvider.notifier).state = true; // Update the auth state
+      ref.read(authProvider.notifier).state = true;
       _navigateTo(const HomeScreen());
     } else {
-      // If not authenticated, check onboarding status
       final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
-      final isOnboardingCompleted =
-          await ref.read(authProvider.notifier).isOnboardingCompleted();
+      final isOnboardingCompleted = await ref.read(authProvider.notifier).isOnboardingCompleted();
 
       if (isFirstTime || !isOnboardingCompleted) {
         _navigateTo(const OnboardingScreen());
@@ -93,9 +88,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     return Scaffold(
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          width: double.infinity,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end, // Changed to end
             children: [
               RichText(
                 text: TextSpan(
@@ -119,6 +116,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 'The only password manager you\'ll ever need',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
+              const SizedBox(height: 48), // Added bottom padding
             ],
           ),
         ),

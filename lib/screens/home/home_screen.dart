@@ -257,25 +257,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     },
                                     leading: Hero(
                                       tag: 'icon_${entry.name}',
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
-                                          'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
-                                          width: 35,
-                                          height: 35,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context).brightness == Brightness.light
-                                                    ? Colors.grey[200]
-                                                    : Colors.grey[700],
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              child: const Icon(Icons.lock_outline),
-                                            );
-                                          },
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness == Brightness.light
+                                              ? Colors.grey[100]
+                                              : Colors.grey[800],
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Image.asset(
+                                            'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return const Icon(Icons.lock_outline, size: 20);
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ),

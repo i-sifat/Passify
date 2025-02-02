@@ -33,4 +33,10 @@ class MasterPasswordService {
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
+
+  // Add debug method
+  Future<void> debugPrintStoredHash() async {
+    final storedHash = await _storage.read(_masterPasswordKey);
+    print('Stored hash: $storedHash');
+  }
 }
