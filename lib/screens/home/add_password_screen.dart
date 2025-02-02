@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/password_entry.dart';
+import '../../models/platform_data.dart';
 import '../../providers/password_provider.dart';
 import 'generate_password_screen.dart';
 
@@ -17,6 +18,18 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  String? _selectedPlatform;
+  bool _isDark = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _isDark = Theme.of(context).brightness == Brightness.dark;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -27,6 +40,21 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     super.dispose();
   }
 
+  List<PlatformData> _getSuggestions(String query) {
+    if (query.isEmpty) return [];
+    return platformsData.where((platform) {
+      return platform.name.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+  }
+
+  void _onPlatformSelected(PlatformData platform) {
+    setState(() {
+      _selectedPlatform = platform.name;
+      _nameController.text = platform.name;
+      _urlController.text = platform.url;
+    });
+  }
+
   void _addPassword() {
     if (_nameController.text.isEmpty ||
         _urlController.text.isEmpty ||
@@ -35,6 +63,25 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill in all fields'),
+        ),
+      );
+      return;
+    }
+
+    if (!_urlController.text.startsWith('http://') &&
+        !_urlController.text.startsWith('https://')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid URL starting with http:// or https://'),
+        ),
+      );
+      return;
+    }
+
+    if (!_emailController.text.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address'),
         ),
       );
       return;
@@ -65,84 +112,144 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'ADD NEW',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              const SizedBox(height: 32),
-              _buildTextField(
-                context,
-                'NAME',
-                _nameController,
-                hintText: 'Website/App Name',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'URL',
-                _urlController,
-                hintText: 'Website/App Link',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'EMAIL / USERNAME',
-                _emailController,
-                hintText: 'Email / Username',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'PASSWORD',
-                _passwordController,
-                hintText: 'Password',
-                obscureText: _obscurePassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () async {
-                  final password = await Navigator.push<String>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GeneratePasswordScreen(),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_selectedPlatform != null) ...[
+                  Center(
+                    child: Image.asset(
+                      'assets/icons/${_isDark ? 'Dark' : 'Light'}/Platform=$_selectedPlatform, Color=${_isDark ? 'Negative' : 'Original'}.png',
+                      width: 64,
+                      height: 64,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const SizedBox();
+                      },
                     ),
-                  );
-                  if (password != null) {
-                    _passwordController.text = password;
-                  }
-                },
-                child: const Text('GENERATE NEW'),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _addPassword,
-                  child: const Text('ADD PASSWORD'),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                Text(
+                  'ADD NEW',
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-              ),
-            ],
+                const SizedBox(height: 32),
+                _buildAutocompleteField(
+                  context,
+                  'NAME',
+                  _nameController,
+                  hintText: 'Website/App Name',
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  context,
+                  'URL',
+                  _urlController,
+                  hintText: 'Website/App Link',
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  context,
+                  'EMAIL / USERNAME',
+                  _emailController,
+                  hintText: 'Email / Username',
+                ),
+                const SizedBox(height: 16),
+                _buildPasswordField(context),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.0),
+                  child: Divider(),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addPassword,
+                    child: const Text('ADD PASSWORD'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAutocompleteField(
+    BuildContext context,
+    String label,
+    TextEditingController controller, {
+    String? hintText,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        RawAutocomplete<PlatformData>(
+          textEditingController: controller,
+          focusNode: FocusNode(),
+          displayStringForOption: (option) => option.name,
+          optionsBuilder: (textEditingValue) {
+            return _getSuggestions(textEditingValue.text);
+          },
+          onSelected: _onPlatformSelected,
+          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+            return TextField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintText: hintText,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey[100]
+                    : Colors.grey[800],
+              ),
+            );
+          },
+          optionsViewBuilder: (context, onSelected, options) {
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                elevation: 4,
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options.elementAt(index);
+                      return InkWell(
+                        onTap: () => onSelected(option),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 24,
+                          ),
+                          child: Text(option.name),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -151,8 +258,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     String label,
     TextEditingController controller, {
     String? hintText,
-    bool obscureText = false,
-    Widget? suffixIcon,
+    bool readOnly = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,13 +272,9 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
-          obscureText: obscureText,
+          readOnly: readOnly,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(
-              color:
-                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
-            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
@@ -181,8 +283,72 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
             fillColor: Theme.of(context).brightness == Brightness.light
                 ? Colors.grey[100]
                 : Colors.grey[800],
-            suffixIcon: suffixIcon,
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'PASSWORD',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey[100]
+                      : Colors.grey[800],
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () async {
+                final password = await Navigator.push<String>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GeneratePasswordScreen(),
+                  ),
+                );
+                if (password != null) {
+                  setState(() {
+                    _passwordController.text = password;
+                  });
+                }
+              },
+              child: const Text('GENERATE'),
+            ),
+          ],
         ),
       ],
     );
