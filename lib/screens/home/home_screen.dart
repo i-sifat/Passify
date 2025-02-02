@@ -5,8 +5,8 @@ import '../../providers/password_provider.dart';
 import '../profile/profile_screen.dart';
 import 'add_password_screen.dart';
 import 'password_details_screen.dart';
-import 'search_delegate.dart';
 import 'update_password_screen.dart';
+import 'search_delegate.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -18,10 +18,64 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
 
+  void _showCompromisedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Compromised Passwords'),
+        content: const Text(
+          'Some of your passwords have been compromised. Would you like to update them now?',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'CANCEL',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor.withOpacity(0.7),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigate to a filtered view of compromised passwords
+              final compromisedPasswords = ref.read(passwordProvider)
+                  .where((p) => p.isCompromised)
+                  .toList();
+              
+              if (compromisedPasswords.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdatePasswordScreen(
+                      entry: compromisedPasswords.first,
+                      isCompromised: true,
+                    ),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('UPDATE'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final passwords = ref.watch(passwordProvider);
-    final compromisedPasswords = passwords.where((p) => p.isCompromised).toList();
+    final compromisedPasswords = passwords.where((p) => p.isCompromised).length;
 
     return Scaffold(
       body: _selectedIndex == 0
@@ -75,66 +129,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
-                            onTap: compromisedPasswords.isNotEmpty
-                                ? () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Compromised Passwords'),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Text(
-                                              '⚠️ These passwords have been found in data breaches. Please update them immediately!',
-                                              style: TextStyle(color: Colors.red),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            ...compromisedPasswords.map((entry) => ListTile(
-                                              title: Text(entry.name),
-                                              subtitle: Text(entry.email),
-                                              trailing: ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => UpdatePasswordScreen(
-                                                        entry: entry,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Text('UPDATE'),
-                                              ),
-                                            )),
-                                          ],
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: const Text('CLOSE'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                : null,
+                            onTap: () {
+                              if (compromisedPasswords > 0) {
+                                _showCompromisedDialog(context);
+                              }
+                            },
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).brightness == Brightness.light
-                                    ? Colors.grey[100]
-                                    : Colors.grey[800],
+                                color: compromisedPasswords > 0
+                                    ? Theme.of(context).colorScheme.error.withOpacity(0.1)
+                                    : Theme.of(context).brightness == Brightness.light
+                                        ? Colors.grey[100]
+                                        : Colors.grey[800],
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    compromisedPasswords.length.toString(),
+                                    compromisedPasswords.toString(),
                                     style: TextStyle(
-                                      color: compromisedPasswords.isNotEmpty
-                                          ? Colors.red
+                                      color: compromisedPasswords > 0
+                                          ? Theme.of(context).colorScheme.error
                                           : Theme.of(context).primaryColor,
                                       fontSize: 32,
                                       fontWeight: FontWeight.bold,
@@ -143,8 +160,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   Text(
                                     'Passwords\nCompromised',
                                     style: TextStyle(
-                                      color: compromisedPasswords.isNotEmpty
-                                          ? Colors.red
+                                      color: compromisedPasswords > 0
+                                          ? Theme.of(context).colorScheme.error
                                           : null,
                                     ),
                                   ),
@@ -210,8 +227,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               itemCount: passwords.length,
                               itemBuilder: (context, index) {
                                 final entry = passwords[index];
-                                final platformName = entry.name.split(' ')[0].toLowerCase();
-                                
                                 return Card(
                                   margin: const EdgeInsets.symmetric(vertical: 8),
                                   child: ListTile(
@@ -228,7 +243,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     leading: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.asset(
-                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=$platformName, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
+                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
                                         width: 35,
                                         height: 35,
                                         errorBuilder: (context, error, stackTrace) {
@@ -242,10 +257,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   : Colors.grey[700],
                                               borderRadius: BorderRadius.circular(8),
                                             ),
-                                            child: Icon(
-                                              Icons.lock_outline,
-                                              color: entry.isCompromised ? Colors.red : null,
-                                            ),
+                                            child: const Icon(Icons.lock_outline),
                                           );
                                         },
                                       ),
@@ -254,13 +266,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       entry.name,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: entry.isCompromised ? Colors.red : null,
+                                        color: entry.isCompromised
+                                            ? Theme.of(context).colorScheme.error
+                                            : null,
                                       ),
                                     ),
                                     subtitle: entry.isCompromised
-                                        ? const Text(
-                                            '⚠️ Password compromised',
-                                            style: TextStyle(color: Colors.red),
+                                        ? Text(
+                                            'Compromised',
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.error,
+                                            ),
                                           )
                                         : null,
                                     trailing: IconButton(

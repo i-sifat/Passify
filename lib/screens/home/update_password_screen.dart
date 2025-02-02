@@ -6,10 +6,12 @@ import 'generate_password_screen.dart';
 
 class UpdatePasswordScreen extends ConsumerStatefulWidget {
   final PasswordEntry entry;
+  final bool isCompromised;
 
   const UpdatePasswordScreen({
     super.key,
     required this.entry,
+    this.isCompromised = false,
   });
 
   @override
@@ -41,7 +43,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     super.dispose();
   }
 
-  void _updatePassword() async {
+  void _updatePassword() {
     if (_nameController.text.isEmpty ||
         _urlController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -54,15 +56,6 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       return;
     }
 
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
     final updatedPassword = PasswordEntry(
       name: _nameController.text,
       url: _urlController.text,
@@ -70,17 +63,11 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       password: _passwordController.text,
       lastUpdated: DateTime.now(),
       icon: widget.entry.icon,
-      isCompromised: widget.entry.isCompromised,
+      isCompromised: false, // Reset compromised status when updating
     );
 
-    await ref
-        .read(passwordProvider.notifier)
-        .updatePassword(widget.entry, updatedPassword);
-
-    if (mounted) {
-      Navigator.pop(context); // Remove loading indicator
-      Navigator.pop(context); // Go back to previous screen
-    }
+    ref.read(passwordProvider.notifier).updatePassword(widget.entry, updatedPassword);
+    Navigator.pop(context);
   }
 
   @override
@@ -101,38 +88,37 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'UPDATE',
-                  style: Theme.of(context).textTheme.displayLarge,
-                ),
-                if (widget.entry.isCompromised) ...[
-                  const SizedBox(height: 16),
+                if (widget.isCompromised) ...[
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.warning_amber_rounded,
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
-                            'This password has been found in data breaches. Please update it to a secure password.',
+                            'This password has been compromised. Please update it to ensure your account security.',
                             style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 24),
                 ],
+                Text(
+                  'UPDATE',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
                 const SizedBox(height: 32),
                 _buildTextField(
                   context,
