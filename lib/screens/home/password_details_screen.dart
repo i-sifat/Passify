@@ -37,9 +37,15 @@ class PasswordDetailsScreen extends ConsumerWidget {
                     ),
               ),
               const SizedBox(height: 8),
-              Text(
-                entry.name.toUpperCase(),
-                style: Theme.of(context).textTheme.displayLarge,
+              Hero(
+                tag: 'password_${entry.name}',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(
+                    entry.name.toUpperCase(),
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                ),
               ),
               const SizedBox(height: 32),
               _buildDetailRow(
@@ -128,7 +134,10 @@ class PasswordDetailsScreen extends ConsumerWidget {
                               entry: entry,
                             ),
                           ),
-                        );
+                        ).then((_) {
+                          // Force a rebuild when returning from update screen
+                          ref.refresh(passwordProvider);
+                        });
                       },
                       child: const Text('UPDATE'),
                     ),

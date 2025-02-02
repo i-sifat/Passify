@@ -229,46 +229,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 final entry = passwords[index];
                                 return Card(
                                   margin: const EdgeInsets.symmetric(vertical: 8),
+                                  color: Theme.of(context).brightness == Brightness.light
+                                      ? Colors.grey[100]
+                                      : Colors.grey[800], // Match the search field color
                                   child: ListTile(
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) => PasswordDetailsScreen(
-                                            entry: entry,
-                                          ),
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) =>
+                                              PasswordDetailsScreen(entry: entry),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            const begin = Offset(1.0, 0.0);
+                                            const end = Offset.zero;
+                                            const curve = Curves.easeInOut;
+                                            var tween = Tween(begin: begin, end: end).chain(
+                                              CurveTween(curve: curve),
+                                            );
+                                            return SlideTransition(
+                                              position: animation.drive(tween),
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration: const Duration(milliseconds: 300),
                                         ),
                                       );
                                     },
-                                    leading: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.asset(
-                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
-                                        width: 35,
-                                        height: 35,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).brightness ==
-                                                      Brightness.light
-                                                  ? Colors.grey[200]
-                                                  : Colors.grey[700],
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(Icons.lock_outline),
-                                          );
-                                        },
+                                    leading: Hero(
+                                      tag: 'icon_${entry.name}',
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
+                                          width: 35,
+                                          height: 35,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).brightness == Brightness.light
+                                                    ? Colors.grey[200]
+                                                    : Colors.grey[700],
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(Icons.lock_outline),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
-                                    title: Text(
-                                      entry.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: entry.isCompromised
-                                            ? Theme.of(context).colorScheme.error
-                                            : null,
+                                    title: Hero(
+                                      tag: 'password_${entry.name}',
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Text(
+                                          entry.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: entry.isCompromised
+                                                ? Theme.of(context).colorScheme.error
+                                                : null,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     subtitle: entry.isCompromised
@@ -285,8 +308,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         color: Theme.of(context).primaryColor,
                                       ),
                                       onPressed: () {
-                                        Clipboard.setData(
-                                            ClipboardData(text: entry.password));
+                                        Clipboard.setData(ClipboardData(text: entry.password));
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
                                             content: Text('Password copied to clipboard'),

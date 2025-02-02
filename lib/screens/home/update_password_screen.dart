@@ -43,7 +43,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     super.dispose();
   }
 
-  void _updatePassword() {
+  Future<void> _updatePassword() async {
     if (_nameController.text.isEmpty ||
         _urlController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -66,8 +66,18 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       isCompromised: false, // Reset compromised status when updating
     );
 
-    ref.read(passwordProvider.notifier).updatePassword(widget.entry, updatedPassword);
-    Navigator.pop(context);
+    await ref.read(passwordProvider.notifier).updatePassword(widget.entry, updatedPassword);
+    
+    if (mounted) {
+      Navigator.pop(context);
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password updated successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -115,9 +125,15 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                   ),
                   const SizedBox(height: 24),
                 ],
-                Text(
-                  'UPDATE',
-                  style: Theme.of(context).textTheme.displayLarge,
+                Hero(
+                  tag: 'password_${widget.entry.name}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'UPDATE',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 _buildTextField(
