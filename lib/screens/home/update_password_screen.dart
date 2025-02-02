@@ -13,8 +13,7 @@ class UpdatePasswordScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<UpdatePasswordScreen> createState() =>
-      _UpdatePasswordScreenState();
+  ConsumerState<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
 }
 
 class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
@@ -42,7 +41,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     super.dispose();
   }
 
-  void _updatePassword() {
+  void _updatePassword() async {
     if (_nameController.text.isEmpty ||
         _urlController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -55,6 +54,15 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       return;
     }
 
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
     final updatedPassword = PasswordEntry(
       name: _nameController.text,
       url: _urlController.text,
@@ -65,10 +73,14 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       isCompromised: widget.entry.isCompromised,
     );
 
-    ref
+    await ref
         .read(passwordProvider.notifier)
         .updatePassword(widget.entry, updatedPassword);
-    Navigator.pop(context);
+
+    if (mounted) {
+      Navigator.pop(context); // Remove loading indicator
+      Navigator.pop(context); // Go back to previous screen
+    }
   }
 
   @override
@@ -83,81 +95,111 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'UPDATE',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              const SizedBox(height: 32),
-              _buildTextField(
-                context,
-                'NAME',
-                _nameController,
-                hintText: 'Website/App Name',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'URL',
-                _urlController,
-                hintText: 'Website/App Link',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'EMAIL / USERNAME',
-                _emailController,
-                hintText: 'Email / Username',
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                context,
-                'PASSWORD',
-                _passwordController,
-                hintText: 'Password',
-                obscureText: _obscurePassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'UPDATE',
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () async {
-                  final password = await Navigator.push<String>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GeneratePasswordScreen(),
+                if (widget.entry.isCompromised) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  );
-                  if (password != null) {
-                    _passwordController.text = password;
-                  }
-                },
-                child: const Text('GENERATE NEW'),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _updatePassword,
-                  child: const Text('SAVE CHANGES'),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            'This password has been found in data breaches. Please update it to a secure password.',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 32),
+                _buildTextField(
+                  context,
+                  'NAME',
+                  _nameController,
+                  hintText: 'Website/App Name',
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                _buildTextField(
+                  context,
+                  'URL',
+                  _urlController,
+                  hintText: 'Website/App Link',
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  context,
+                  'EMAIL / USERNAME',
+                  _emailController,
+                  hintText: 'Email / Username',
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  context,
+                  'PASSWORD',
+                  _passwordController,
+                  hintText: 'Password',
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () async {
+                    final password = await Navigator.push<String>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GeneratePasswordScreen(),
+                      ),
+                    );
+                    if (password != null) {
+                      _passwordController.text = password;
+                    }
+                  },
+                  child: const Text('GENERATE NEW'),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _updatePassword,
+                    child: const Text('SAVE CHANGES'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -188,8 +230,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color:
-                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
+              color: Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

@@ -55,7 +55,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     });
   }
 
-  void _addPassword() {
+  void _addPassword() async {
     if (_nameController.text.isEmpty ||
         _urlController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -87,6 +87,15 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       return;
     }
 
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
     final newPassword = PasswordEntry(
       name: _nameController.text,
       url: _urlController.text,
@@ -96,8 +105,12 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       icon: Icons.lock_outline,
     );
 
-    ref.read(passwordProvider.notifier).addPassword(newPassword);
-    Navigator.pop(context);
+    await ref.read(passwordProvider.notifier).addPassword(newPassword);
+
+    if (mounted) {
+      Navigator.pop(context); // Remove loading indicator
+      Navigator.pop(context); // Go back to home screen
+    }
   }
 
   @override

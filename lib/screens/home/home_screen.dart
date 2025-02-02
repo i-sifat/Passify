@@ -6,6 +6,7 @@ import '../profile/profile_screen.dart';
 import 'add_password_screen.dart';
 import 'password_details_screen.dart';
 import 'search_delegate.dart';
+import 'update_password_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final passwords = ref.watch(passwordProvider);
-    final compromisedPasswords = passwords.where((p) => p.isCompromised).length;
+    final compromisedPasswords = passwords.where((p) => p.isCompromised).toList();
 
     return Scaffold(
       body: _selectedIndex == 0
@@ -50,8 +51,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
+                              color: Theme.of(context).brightness == Brightness.light
                                   ? Colors.grey[100]
                                   : Colors.grey[800],
                               borderRadius: BorderRadius.circular(8),
@@ -74,28 +74,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.grey[100]
-                                  : Colors.grey[800],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  compromisedPasswords.toString(),
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
+                          child: GestureDetector(
+                            onTap: compromisedPasswords.isNotEmpty
+                                ? () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Compromised Passwords'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              '⚠️ These passwords have been found in data breaches. Please update them immediately!',
+                                              style: TextStyle(color: Colors.red),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            ...compromisedPasswords.map((entry) => ListTile(
+                                              title: Text(entry.name),
+                                              subtitle: Text(entry.email),
+                                              trailing: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => UpdatePasswordScreen(
+                                                        entry: entry,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: const Text('UPDATE'),
+                                              ),
+                                            )),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: const Text('CLOSE'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.light
+                                    ? Colors.grey[100]
+                                    : Colors.grey[800],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    compromisedPasswords.length.toString(),
+                                    style: TextStyle(
+                                      color: compromisedPasswords.isNotEmpty
+                                          ? Colors.red
+                                          : Theme.of(context).primaryColor,
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const Text('Passwords\nCompromised'),
-                              ],
+                                  Text(
+                                    'Passwords\nCompromised',
+                                    style: TextStyle(
+                                      color: compromisedPasswords.isNotEmpty
+                                          ? Colors.red
+                                          : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -118,10 +172,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor:
-                            Theme.of(context).brightness == Brightness.light
-                                ? Colors.grey[100]
-                                : Colors.grey[800],
+                        fillColor: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[100]
+                            : Colors.grey[800],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -134,9 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   Icon(
                                     Icons.lock_outline,
                                     size: 64,
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withAlpha(128),
+                                    color: Theme.of(context).primaryColor.withAlpha(128),
                                   ),
                                   const SizedBox(height: 16),
                                   const Text('NO PASSWORDS'),
@@ -144,10 +195,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   Text(
                                     'Add your first password by tapping the + button below',
                                     textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.copyWith(
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           color: Theme.of(context)
                                               .textTheme
                                               .bodyLarge
@@ -162,6 +210,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               itemCount: passwords.length,
                               itemBuilder: (context, index) {
                                 final entry = passwords[index];
+                                final platformName = entry.name.split(' ')[0].toLowerCase();
+                                
                                 return Card(
                                   margin: const EdgeInsets.symmetric(vertical: 8),
                                   child: ListTile(
@@ -169,8 +219,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              PasswordDetailsScreen(
+                                          builder: (context) => PasswordDetailsScreen(
                                             entry: entry,
                                           ),
                                         ),
@@ -179,7 +228,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     leading: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.asset(
-                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=${entry.name.split(' ')[0]}, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
+                                        'assets/icons/${Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'}/Platform=$platformName, Color=${Theme.of(context).brightness == Brightness.dark ? 'Negative' : 'Original'}.png',
                                         width: 35,
                                         height: 35,
                                         errorBuilder: (context, error, stackTrace) {
@@ -191,20 +240,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                       Brightness.light
                                                   ? Colors.grey[200]
                                                   : Colors.grey[700],
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
-                                            child: const Icon(Icons.lock_outline),
+                                            child: Icon(
+                                              Icons.lock_outline,
+                                              color: entry.isCompromised ? Colors.red : null,
+                                            ),
                                           );
                                         },
                                       ),
                                     ),
                                     title: Text(
                                       entry.name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
+                                        color: entry.isCompromised ? Colors.red : null,
                                       ),
                                     ),
+                                    subtitle: entry.isCompromised
+                                        ? const Text(
+                                            '⚠️ Password compromised',
+                                            style: TextStyle(color: Colors.red),
+                                          )
+                                        : null,
                                     trailing: IconButton(
                                       icon: Icon(
                                         Icons.content_copy,
@@ -213,11 +271,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       onPressed: () {
                                         Clipboard.setData(
                                             ClipboardData(text: entry.password));
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                'Password copied to clipboard'),
+                                            content: Text('Password copied to clipboard'),
                                             duration: Duration(seconds: 2),
                                           ),
                                         );
