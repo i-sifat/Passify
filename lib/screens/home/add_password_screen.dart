@@ -331,24 +331,27 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () async {
-                final password = await Navigator.push<String>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GeneratePasswordScreen(),
-                  ),
-                );
-                if (password != null) {
-                  setState(() {
-                    _passwordController.text = password;
-                  });
-                }
-              },
-              child: const Text('GENERATE'),
-            ),
           ],
+        ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton.icon(
+            onPressed: () async {
+              final password = await Navigator.push<String>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GeneratePasswordScreen(),
+                ),
+              );
+              if (password != null) {
+                setState(() {
+                  _passwordController.text = password;
+                });
+              }
+            },
+            label: const Text('GENERATE NEW'),
+          ),
         ),
       ],
     );
