@@ -42,7 +42,7 @@ class PasswordCheckerService {
         }
         return 0; // Password not found in breaches
       }
-      
+
       throw Exception('Failed to check password: ${response.statusCode}');
     } catch (e) {
       print('Error checking password: $e');

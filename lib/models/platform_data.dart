@@ -1,4 +1,3 @@
-
 class PlatformData {
   final String name;
   final String url;

@@ -112,30 +112,6 @@ class ProfileScreen extends ConsumerWidget {
                   );
                 },
               ),
-              // _buildMenuItem(
-              //   context,
-              //   'Autofill',
-              //   Icons.password_outlined,
-              //   trailing: Switch(
-              //     value: isAutofillEnabled,
-              //     onChanged: (value) {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => const AutofillSettingsScreen(),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => const AutofillSettingsScreen(),
-              //       ),
-              //     );
-              //   },
-              // ),
               _buildMenuItem(
                 context,
                 'Check for Updates',
@@ -216,7 +192,7 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Center(
                 child: Text(
-                  'v 0.1.2',
+                  'v 1.0.0',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context)
                             .textTheme

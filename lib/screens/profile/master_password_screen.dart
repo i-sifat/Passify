@@ -6,7 +6,8 @@ class MasterPasswordScreen extends ConsumerStatefulWidget {
   const MasterPasswordScreen({super.key});
 
   @override
-  ConsumerState<MasterPasswordScreen> createState() => _MasterPasswordScreenState();
+  ConsumerState<MasterPasswordScreen> createState() =>
+      _MasterPasswordScreenState();
 }
 
 class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
@@ -40,18 +41,23 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
 
   bool _validatePassword(String password) {
     if (password.length < 8) {
-      setState(() => _errorMessage = 'Password must be at least 8 characters long');
+      setState(
+          () => _errorMessage = 'Password must be at least 8 characters long');
       return false;
     }
 
     bool hasUpperCase = password.contains(RegExp(r'[A-Z]'));
     bool hasLowerCase = password.contains(RegExp(r'[a-z]'));
     bool hasNumbers = password.contains(RegExp(r'[0-9]'));
-    bool hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    bool hasSpecialCharacters =
+        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
-    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialCharacters) {
-      setState(() => _errorMessage = 
-        'Password must contain uppercase, lowercase, numbers, and special characters');
+    if (!hasUpperCase ||
+        !hasLowerCase ||
+        !hasNumbers ||
+        !hasSpecialCharacters) {
+      setState(() => _errorMessage =
+          'Password must contain uppercase, lowercase, numbers, and special characters');
       return false;
     }
 
@@ -93,7 +99,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
       }
 
       // Save new password
-      await _masterPasswordService.saveMasterPassword(_newPasswordController.text);
+      await _masterPasswordService
+          .saveMasterPassword(_newPasswordController.text);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +151,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                      color:
+                          Theme.of(context).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -171,21 +179,24 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                   'CURRENT PASSWORD',
                   _currentPasswordController,
                   _obscureCurrentPassword,
-                  () => setState(() => _obscureCurrentPassword = !_obscureCurrentPassword),
+                  () => setState(
+                      () => _obscureCurrentPassword = !_obscureCurrentPassword),
                 ),
                 const SizedBox(height: 24),
                 _buildPasswordField(
                   'NEW PASSWORD',
                   _newPasswordController,
                   _obscureNewPassword,
-                  () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+                  () => setState(
+                      () => _obscureNewPassword = !_obscureNewPassword),
                 ),
                 const SizedBox(height: 24),
                 _buildPasswordField(
                   'CONFIRM NEW PASSWORD',
                   _confirmPasswordController,
                   _obscureConfirmPassword,
-                  () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                  () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -198,7 +209,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text('UPDATE PASSWORD'),

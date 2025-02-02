@@ -47,7 +47,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 1000)); // Reduced delay
     if (!mounted) return;
 
-    final isAuthenticated = await ref.read(authProvider.notifier).isAuthenticated();
+    final isAuthenticated =
+        await ref.read(authProvider.notifier).isAuthenticated();
 
     if (isAuthenticated) {
       final email = await ref.read(authProvider.notifier).getUserEmail();
@@ -58,7 +59,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       _navigateTo(const HomeScreen());
     } else {
       final isFirstTime = await ref.read(authProvider.notifier).isFirstTime();
-      final isOnboardingCompleted = await ref.read(authProvider.notifier).isOnboardingCompleted();
+      final isOnboardingCompleted =
+          await ref.read(authProvider.notifier).isOnboardingCompleted();
 
       if (isFirstTime || !isOnboardingCompleted) {
         _navigateTo(const OnboardingScreen());

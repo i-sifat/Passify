@@ -12,7 +12,8 @@ class MasterPasswordScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MasterPasswordScreen> createState() => _MasterPasswordScreenState();
+  ConsumerState<MasterPasswordScreen> createState() =>
+      _MasterPasswordScreenState();
 }
 
 class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
@@ -43,7 +44,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
   Future<void> _handleSubmit() async {
     if (widget.isInitialSetup) {
       if (_passwordController.text.length < 8) {
-        setState(() => _errorMessage = 'Password must be at least 8 characters');
+        setState(
+            () => _errorMessage = 'Password must be at least 8 characters');
         return;
       }
 
@@ -83,7 +85,9 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.isInitialSetup ? 'SET MASTER\nPASSWORD' : 'ENTER MASTER\nPASSWORD',
+                widget.isInitialSetup
+                    ? 'SET MASTER\nPASSWORD'
+                    : 'ENTER MASTER\nPASSWORD',
                 style: Theme.of(context).textTheme.displayLarge,
               ),
               const SizedBox(height: 16),
@@ -130,7 +134,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _handleSubmit,
-                  child: Text(widget.isInitialSetup ? 'SET PASSWORD' : 'UNLOCK'),
+                  child:
+                      Text(widget.isInitialSetup ? 'SET PASSWORD' : 'UNLOCK'),
                 ),
               ),
             ],

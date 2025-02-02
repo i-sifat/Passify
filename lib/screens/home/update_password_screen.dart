@@ -15,7 +15,8 @@ class UpdatePasswordScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
+  ConsumerState<UpdatePasswordScreen> createState() =>
+      _UpdatePasswordScreenState();
 }
 
 class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
@@ -66,8 +67,10 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
       isCompromised: false, // Reset compromised status when updating
     );
 
-    await ref.read(passwordProvider.notifier).updatePassword(widget.entry, updatedPassword);
-    
+    await ref
+        .read(passwordProvider.notifier)
+        .updatePassword(widget.entry, updatedPassword);
+
     if (mounted) {
       Navigator.pop(context);
       // Show success message
@@ -102,7 +105,8 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                      color:
+                          Theme.of(context).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -232,7 +236,8 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color: Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
+              color:
+                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(128),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

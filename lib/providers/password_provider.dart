@@ -53,9 +53,10 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
 
   Future<void> addPassword(PasswordEntry entry) async {
     // Check if password is compromised
-    final compromisedCount = await PasswordCheckerService.checkPassword(entry.password);
+    final compromisedCount =
+        await PasswordCheckerService.checkPassword(entry.password);
     final isCompromised = compromisedCount > 0;
-    
+
     final newEntry = PasswordEntry(
       name: entry.name,
       url: entry.url,
@@ -70,11 +71,13 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
     await _savePasswords();
   }
 
-  Future<void> updatePassword(PasswordEntry oldEntry, PasswordEntry newEntry) async {
+  Future<void> updatePassword(
+      PasswordEntry oldEntry, PasswordEntry newEntry) async {
     // Check if new password is compromised
-    final compromisedCount = await PasswordCheckerService.checkPassword(newEntry.password);
+    final compromisedCount =
+        await PasswordCheckerService.checkPassword(newEntry.password);
     final isCompromised = compromisedCount > 0;
-    
+
     final updatedEntry = PasswordEntry(
       name: newEntry.name,
       url: newEntry.url,
@@ -113,11 +116,12 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
 
   Future<void> checkAllPasswords() async {
     List<PasswordEntry> updatedEntries = [];
-    
+
     for (var entry in state) {
-      final compromisedCount = await PasswordCheckerService.checkPassword(entry.password);
+      final compromisedCount =
+          await PasswordCheckerService.checkPassword(entry.password);
       final isCompromised = compromisedCount > 0;
-      
+
       updatedEntries.add(PasswordEntry(
         name: entry.name,
         url: entry.url,
@@ -128,7 +132,7 @@ class PasswordNotifier extends StateNotifier<List<PasswordEntry>> {
         icon: entry.icon,
       ));
     }
-    
+
     state = updatedEntries;
     await _savePasswords();
   }
