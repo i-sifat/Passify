@@ -154,7 +154,19 @@ class _GeneratePasswordScreenState
                         );
                         Navigator.pop(context, _generatedPassword);
                       },
-                      child: const Text('USE PASSWORD'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      child: const Text(
+                        'USE PASSWORD',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
